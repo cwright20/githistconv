@@ -1,0 +1,8 @@
+[project]
+name = "githistconv"
+version = "0.1.0"
+description = "Convert git log output to line-delimited JSON and back"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "cwright20" }]
