@@ -49,10 +49,32 @@ git log --date=iso-strict --format='%H%x1f%an%x1f%ae%x1f%ad%x1f%P%x1f%s%x1e' \
 That last example filters the JSON down to merge commits with `jq`, which
 would be painful to do reliably against raw `git log` text.
 
+You can also turn a `history.jsonl` file into a
+[`git fast-import`](https://git-scm.com/docs/git-fast-import) stream. This
+rebuilds the commit graph -- author, date, subject, parents -- as new,
+synthetic commits with placeholder file contents. It's meant for building a
+throwaway repo that has the same shape as a real one (same branching, same
+number of commits) without copying any of the original files:
+
+```sh
+python githistconv.py to-fast-import -i history.jsonl -o history.fi
+git init synthetic-repo && cd synthetic-repo && git fast-import < ../history.fi
+```
+
+Commits whose parent hash isn't in the input become roots in the rebuilt
+history instead of raising an error, so a filtered or truncated `history.jsonl`
+still imports cleanly.
+
 ## Status
 
-Early. The core parse/serialize round trip works and is tested. See the
-roadmap for what's missing.
+Early. The core parse/serialize round trip and the fast-import export work
+and are tested. Remaining work:
+
+- `--format` flag to pick which fields get parsed/emitted, instead of the
+  fixed six
+- a CSV output mode
+- multi-line commit bodies, not just the subject
+- packaging as an installable console script
 
 ## License
 
